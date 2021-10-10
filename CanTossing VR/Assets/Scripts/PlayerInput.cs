@@ -1,34 +1,29 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
+using static HandSide;
 
     public class PlayerInput: MonoBehaviour
     {
+        public event Action<float> Trigger = delegate {};
+        public event Action<float> Grip = delegate {};
+        
         InputDevice _targetDevice;
-        [SerializeField] bool _isRightHand;
-        Animator _handAnimator;
-        void Start()
-        {
-            TryToInitialize();
-            _handAnimator = GetComponentInChildren<Animator>();
-        }
-
+        [SerializeField] Side _handSide;
+        bool _isTriggerActive;
+        bool _isGripActive;
+        
+        void Start() => TryToInitialize();
         void TryToInitialize()
         {
-            List<InputDevice> devices = new List<InputDevice>();
-            InputDeviceCharacteristics controllerCharacteristic = InputDeviceCharacteristics.Controller;
-            InputDeviceCharacteristics desiredCharacteristics;
+            var devices = new List<InputDevice>();
+            var desiredCharacteristics = InputDeviceCharacteristics.Controller;
 
-            if (_isRightHand)
-            {
-                InputDeviceCharacteristics rightCharacteristic = InputDeviceCharacteristics.Right;
-                desiredCharacteristics = rightCharacteristic | controllerCharacteristic;
-            }
+            if(_handSide == Side.Left)
+                desiredCharacteristics |= InputDeviceCharacteristics.Left;
             else
-            {
-                InputDeviceCharacteristics leftCharacteristic = InputDeviceCharacteristics.Left;
-                desiredCharacteristics = leftCharacteristic | controllerCharacteristic;
-            }
+                desiredCharacteristics |= InputDeviceCharacteristics.Right;
 
             InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
             if(devices.Count > 0)
@@ -40,20 +35,40 @@ using UnityEngine.XR;
             if (!_targetDevice.isValid)
                 TryToInitialize();
             else
-                UpdateAnimator();
+                SendInputInformation();
         }
 
-        void UpdateAnimator()
+        void SendInputInformation()
         {
-            if (_handAnimator == null) return;
-            if (_targetDevice.TryGetFeatureValue(CommonUsages.trigger, out float triggerValue))
-                _handAnimator.SetFloat("Trigger", triggerValue);
+            SendTriggerInformation();
+            SendGripInformation();
+        }
+        void SendTriggerInformation()
+        {
+            if (_targetDevice.TryGetFeatureValue(CommonUsages.trigger, out var triggerValue))
+            {
+                _isTriggerActive = true;
+                Trigger.Invoke(triggerValue);
+            }
             else
-                _handAnimator.SetFloat("Trigger", 0f);
-
-            if (_targetDevice.TryGetFeatureValue(CommonUsages.grip, out float gripValue))
-                _handAnimator.SetFloat("Grip", gripValue);
+            {
+                if (!_isTriggerActive) return;
+                _isTriggerActive = false;
+                Trigger.Invoke(0f);
+            }
+        }
+        void SendGripInformation()
+        {
+            if (_targetDevice.TryGetFeatureValue(CommonUsages.grip, out var gripValue))
+            {
+                _isGripActive = true;
+                Grip.Invoke(gripValue);
+            }
             else
-                _handAnimator.SetFloat("Grip", 0f);
+            {
+                if (!_isGripActive) return;
+                _isGripActive = false;
+                Grip.Invoke(0f);
+            }
         }
     }

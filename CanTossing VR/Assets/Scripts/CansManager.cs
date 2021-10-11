@@ -5,26 +5,26 @@ using UnityEngine;
     public class CansManager: MonoBehaviour
     {
         List<Vector3> _cansOriginalPosition = new List<Vector3>();
-        List<Transform> _cans = new List<Transform>();
+        List<Rigidbody> _cansRigidBody = new List<Rigidbody>();
         void Awake()
         {
             for (int i = 0; i < transform.childCount; i++)
             {
                 var canTransform = transform.GetChild(i);
-                _cans.Add(canTransform);
+                _cansRigidBody.Add(canTransform.GetComponent<Rigidbody>());
                 _cansOriginalPosition.Add(canTransform.position);
             }
         }
         [ContextMenu("restartCans")]
         public void RestartCans()
         {
-            for (int i = 0; i < _cans.Count; i++)
+            for (int i = 0; i < _cansRigidBody.Count; i++)
             {
-                var rb = _cans[i].GetComponent<Rigidbody>();
+                var rb = _cansRigidBody[i];
                 rb.velocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
-                _cans[i].rotation = quaternion.identity;
-                _cans[i].position = _cansOriginalPosition[i];
+                _cansRigidBody[i].rotation = quaternion.identity;
+                _cansRigidBody[i].position = _cansOriginalPosition[i];
             }
         }
     }

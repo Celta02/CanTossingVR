@@ -6,6 +6,10 @@ using UnityEngine;
     {
         [SerializeField] List<Transform> _spawningPositions;
         [SerializeField] GameObject _ballPrefab;
+        GameManager _gameManager;
+
+        public GameManager Manager { set => _gameManager = value; }
+
 
         void Awake()
         {
@@ -24,6 +28,7 @@ using UnityEngine;
         IEnumerator RespawnCoroutine(GameObject ball, int ballNumber)
         {
             //Disappear Effect
+            _gameManager.UseAttempt();
             ball.SetActive(false);
             yield return new WaitForSeconds(3f);
             

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using static HandSide;
 
-    public class PlayerInput: MonoBehaviour
+    public class PlayerController: MonoBehaviour
     {
         public event Action<float> Trigger = delegate {};
         public event Action<float> Grip = delegate {};
@@ -70,5 +70,11 @@ using static HandSide;
                 _isGripActive = false;
                 Grip.Invoke(0f);
             }
+        }
+
+        public Vector3 GetVelocity()
+        {
+            _targetDevice.TryGetFeatureValue(CommonUsages.deviceVelocity, out var velocity);
+            return velocity;
         }
     }

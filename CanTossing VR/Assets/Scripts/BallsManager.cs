@@ -23,17 +23,21 @@ using UnityEngine;
             }
         }
 
-        public void RespawnBall(GameObject ball, int ballNumber) => StartCoroutine(RespawnCoroutine(ball, ballNumber));
+        public void RespawnBall(GameObject ball, int ballNumber) => StartCoroutine(RespawnCoroutine(ball, ballNumber, false));
+        public void ReturnBallSafely(GameObject ball, int ballNumber) => StartCoroutine(RespawnCoroutine(ball, ballNumber, true));
 
-        IEnumerator RespawnCoroutine(GameObject ball, int ballNumber)
+        IEnumerator RespawnCoroutine(GameObject ball, int ballNumber, bool safely)
         {
-            //Disappear Effect
-            _gameManager.UseAttempt();
+            if(!safely)
+                _gameManager.UseAttempt();
+            
+            //TODO Disappear Effect
             ball.SetActive(false);
             yield return new WaitForSeconds(3f);
             
             ball.transform.position = _spawningPositions[ballNumber].position;
             ball.SetActive(true);
-            //Reappear Effect
+            //TODO Reappear Effect
         }
+
     }

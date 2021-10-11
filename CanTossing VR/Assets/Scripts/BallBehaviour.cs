@@ -19,8 +19,9 @@ public class BallBehaviour : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
-        if (!other.collider.CompareTag("Floor")) return;
-        
-        _ballsManager.RespawnBall(gameObject,_ballNumber);
+        if (other.collider.CompareTag("Safe"))
+            _ballsManager.ReturnBallSafely(gameObject, _ballNumber);
+        if (other.collider.CompareTag("Floor")) 
+            _ballsManager.RespawnBall(gameObject,_ballNumber);
     }
 }

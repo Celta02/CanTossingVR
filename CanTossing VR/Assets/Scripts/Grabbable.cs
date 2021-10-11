@@ -2,7 +2,7 @@
 
 public class Grabbable : MonoBehaviour
 {
-    [SerializeField] float _velocityAmplificator = 5f;
+    [SerializeField] float _velocityFactor = 5f;
     bool _isGrabbed;
     Transform _snapTransform;
     Rigidbody _rigidBody;
@@ -35,7 +35,8 @@ public class Grabbable : MonoBehaviour
 
     void ReleaseImpulse()
     {
-        var velocity = _playerController.GetVelocity() * _velocityAmplificator;
-        _rigidBody.AddForce(velocity,ForceMode.VelocityChange);
+        var velocity = _playerController.GetVelocity() * _velocityFactor;
+        _rigidBody.velocity = velocity;
+        //_rigidBody.AddForce(velocity,ForceMode.VelocityChange);
     }
 }
